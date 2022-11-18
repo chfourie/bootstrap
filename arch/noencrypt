@@ -146,7 +146,7 @@ arch-chroot /mnt bash <<EOF
   su ${USERNAME} -c "makepkg -s --noconfirm"
   mv ./paru*.pkg.tar.zst paru.pkg.tar.zst
   pacman -U --noconfirm "/home/${USERNAME}/paru/$(ls paru*.pkg.tar.zst)"
-  ls paru*.pkg.tar.zst | xargs -I{} pacman -U --noconfirm "/home/${USERNAME}/paru/{}
+  ls *.pkg.tar.zst | xargs -I{} pacman -U --noconfirm "/home/${USERNAME}/paru/{}
   rm -fr /home/${USERNAME}/paru
   paru -Syu
   exit
