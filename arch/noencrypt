@@ -124,6 +124,9 @@ arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
 echo "Please enter password for ${USERNAME}"
 arch-chroot /mnt passwd "${USERNAME}"
 
+
+echo "Installation Completed.  Press <Enter> to reboot..."
+read -r REBOOT
 umount -l /mnt/boot
 umount -l /mnt
-echo "Ready to reboot"
+reboot now
