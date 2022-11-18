@@ -8,7 +8,7 @@ echo "Please enter computer name"
 read -r COMPUTER_NAME
 
 echo "Please enter username to create"
-read -r TARGET_USERNAME
+read -r USERNAME
 
 TARGET_DEVICE="/dev/${TARGET_DEVICE}"
 EFI_PARTITION="${TARGET_DEVICE}p1"
@@ -120,9 +120,9 @@ arch-chroot /mnt pacman --noconfirm -S vim \
 
 
 echo "=== Setup user ==="
-arch-chroot /mnt useradd -m "${TARGET_USERNAME}" -G wheel,audio,video,optical,storage
-echo "Please enter password for ${TARGET_USERNAME}"
-arch-chroot /mnt passwd "${TARGET_USERNAME}"
+arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
+echo "Please enter password for ${USERNAME}"
+arch-chroot /mnt passwd "${USERNAME}"
 
 umount -l /mnt/boot
 umount -l /mnt
