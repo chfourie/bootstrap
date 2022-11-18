@@ -119,17 +119,6 @@ arch-chroot /mnt pacman --noconfirm -S vim \
                                        sof-tools \
                                        openssh
 
-echo "=== Installing PARU ==="
-
-install_paru() {
-  cd /tmp || true
-  clone https://aur.archlinux.org/paru.git
-  cd paru || true
-  makepkg -si
-}
-
-arch-chroot /mnt bash -c "$(declare -f install_paru) && install_paru && paru"
-
 echo "=== Enable PPP (Required for vpn client) ==="
 arch-chroot /mnt modprobe ppp_generic
 
@@ -141,7 +130,22 @@ arch-chroot /mnt passwd "${USERNAME}"
 echo "=== Generate SSH key pair for ${USERNAME} ==="
 ssh-keygen -t ed25519 -f "/mnt/home/${USERNAME}/.ssh/ed25519" -N ''
 
+echo "=== Installing PARU ==="
+
+install_paru() {
+  cd "/tmp" || true
+  clone https://aur.archlinux.org/paru.git
+  cd paru || true
+  makepkg -si
+  cd ..
+  rm -fr paru
+  paru
+}
+
+arch-chroot -u "${USERNAME}" /mnt bash -c "$(declare -f install_paru) && install_paru"
+
 echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
+# shellcheck disable=SC2034
 read -r REBOOT
 umount -l /mnt/boot
 umount -l /mnt
