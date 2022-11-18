@@ -140,13 +140,12 @@ EOF
 echo "=== Installing PARU ==="
 arch-chroot /mnt bash <<EOF
   $(declare -p USERNAME)
-  cd /home/${USERNAME}/paru
-  su ${USERNAME} -c "
-    git clone https://aur.archlinux.org/paru.git
-    cd paru
-    makepkg -s --noconfirm
-    mv ./paru*.pkg.tar.zst paru.pkg.tar.zst
-  "
+  cd /home/${USERNAME}
+  su ${USERNAME} -c "git clone https://aur.archlinux.org/paru.git"
+  cd paru
+  sed -n 's/.*depends = //p' .SRCINFO | pacman -S -
+  su ${USERNAME} -c "makepkg -s --noconfirm"
+  mv ./paru*.pkg.tar.zst paru.pkg.tar.zst
   pacman -U --noconfirm /home/${USERNAME}/paru/paru.pkg.tar.zst
   rm -fr /home/${USERNAME}/paru
   paru -Syu
