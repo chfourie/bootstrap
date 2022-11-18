@@ -142,7 +142,7 @@ arch-chroot /mnt bash <<EOF
   cd /home/${USERNAME}
   su ${USERNAME} -c "git clone https://aur.archlinux.org/paru.git"
   cd paru
-  sed -n 's/.*depends = //p' .SRCINFO | pacman -S -
+  sed -n 's/.*depends = //p' .SRCINFO | pacman --noconfirm -S -
   su ${USERNAME} -c "makepkg -s --noconfirm"
   mv ./paru*.pkg.tar.zst paru.pkg.tar.zst
   pacman -U --noconfirm /home/${USERNAME}/paru/paru.pkg.tar.zst
