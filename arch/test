@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+USERNAME="chfourie"
+
+
+echo "=== Generate SSH key pair for ${USERNAME} ==="
+arch-chroot /mnt bash -c <<EOF
+  $(declare -p USERNAME)
+  cd /home/${USERNAME}
+  mkdir .ssh || true
+  su ${USERNAME} -c "ssh-keygen -t ed25519 -f .ssh/ed25519 -N ''"
+EOF
+
+echo "=== Installing PARU ==="
+arch-chroot /mnt bash <<EOF
+  $(declare -p USERNAME)
+  cd /tmp
+  su ${USERNAME} -c "
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si --noconfirm
+    cd ..
+    rm -fr paru
+    paru -Syu
+  "
+EOF

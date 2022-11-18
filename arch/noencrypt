@@ -128,28 +128,26 @@ echo "Please enter password for ${USERNAME}"
 arch-chroot /mnt passwd "${USERNAME}"
 
 echo "=== Generate SSH key pair for ${USERNAME} ==="
-
-gen_ssh_keys() {
-  cd "/home/${USERNAME}" || true
-  mkdir .ssh
-  ssh-keygen -t ed25519 -f ".ssh/ed25519" -N ''
-}
-
-arch-chroot -u "${USERNAME}" /mnt bash -c "$(declare -f gen_ssh_keys) && $(declare -p USERNAME) && gen_ssh_keys"
+arch-chroot /mnt bash -c <<EOF
+  $(declare -p USERNAME)
+  cd /home/${USERNAME}
+  mkdir .ssh || true
+  su ${USERNAME} -c "ssh-keygen -t ed25519 -f .ssh/ed25519 -N ''"
+EOF
 
 echo "=== Installing PARU ==="
-
-install_paru() {
-  cd "/tmp" || true
-  git clone https://aur.archlinux.org/paru.git
-  cd paru || true
-  makepkg -si --noconfirm
-  cd ..
-  rm -fr paru
-  paru
-}
-
-arch-chroot -u "${USERNAME}" /mnt bash -c "$(declare -f install_paru) && install_paru"
+arch-chroot /mnt bash <<EOF
+  $(declare -p USERNAME)
+  cd /tmp
+  su ${USERNAME} -c "
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si --noconfirm
+    cd ..
+    rm -fr paru
+    paru -Syu
+  "
+EOF
 
 echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
 # shellcheck disable=SC2034
