@@ -128,15 +128,22 @@ echo "Please enter password for ${USERNAME}"
 arch-chroot /mnt passwd "${USERNAME}"
 
 echo "=== Generate SSH key pair for ${USERNAME} ==="
-ssh-keygen -t ed25519 -f "/mnt/home/${USERNAME}/.ssh/ed25519" -N ''
+
+gen_ssh_keys() {
+  cd "/home/${USERNAME}" || true
+  mkdir .ssh
+  ssh-keygen -t ed25519 -f ".ssh/ed25519" -N ''
+}
+
+arch-chroot -u "${USERNAME}" /mnt bash -c "$(declare -f gen_ssh_keys) && $(declare -p USERNAME) && gen_ssh_keys"
 
 echo "=== Installing PARU ==="
 
 install_paru() {
   cd "/tmp" || true
-  clone https://aur.archlinux.org/paru.git
+  git clone https://aur.archlinux.org/paru.git
   cd paru || true
-  makepkg -si
+  makepkg -si --noconfirm
   cd ..
   rm -fr paru
   paru
