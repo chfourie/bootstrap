@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+
+lsblk
+echo "Please enter name of target drive (excluding '/dev/')"
+read -r TARGET_DEVICE
+
+echo "Please enter computer name"
+read -r COMPUTER_NAME
+
+echo "Please enter username to create"
+read -r TARGET_USERNAME
+
+TARGET_DEVICE="/dev/${TARGET_DEVICE}"
+EFI_PARTITION="${TARGET_DEVICE}p1"
+EFI_PARTITION_UUID=$(uuidgen)
+ROOT_PARTITION="${TARGET_DEVICE}p2"
+ROOT_PARTITION_UUID=$(uuidgen)
+
+echo "setting up ${TARGET_DEVICE}..."
+
+echo "=== Enable Network Time Protocol ==="
+timedatectl set-ntp true
+
+echo "=== Set up partition table with new partitions ==="
+sgdisk --zap-all "${TARGET_DEVICE}"
+sgdisk -n 0:0:+500MiB -t 0:ef00 -c 0:boot -u 0:"${EFI_PARTITION_UUID}" "${TARGET_DEVICE}"
+sgdisk -n 0:0:0 -t 0:8300 -c 0:root -u 0:"${ROOT_PARTITION_UUID}" "${TARGET_DEVICE}"
+e2fsck -fy "${ROOT_PARTITION}"
+
+echo "=== Make filesystems on new partitions ==="
+mkfs.fat -F 32 "${EFI_PARTITION}"
+mkfs.ext4 -qFF "${ROOT_PARTITION}"
+
+echo "=== Mount partitions ==="
+mount "${ROOT_PARTITION}" /mnt
+mount --mkdir "${EFI_PARTITION}" /mnt/boot
+
+echo "=== Find the 20 most recently updated mirror sites and sort them by download rates ==="
+reflector --country ZA,GB,US --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+
+echo "=== Install base linux packages to mounted root ==="
+pacstrap /mnt base \
+              linux \
+              linux-firmware \
+              base-devel \
+              linux-headers \
+              intel-ucode \
+              networkmanager \
+              wireless_tools \
+              wpa_supplicant
+
+echo "=== Generate fstab from current mounts below /mnt ==="
+genfstab -U /mnt > /mnt/etc/fstab
+##################################################################################################
+
+echo "=== Set timezone ==="
+ln -sf /mnt/usr/share/zoneinfo/Africa/Johannesburg /mnt/etc/localtime
+
+echo "=== Sync hardware clock to system clock ==="
+arch-chroot /mnt hwclock --systohc
+
+echo "=== Set up localization ==="
+{
+  echo "af_ZA.UTF-8 UTF-8"
+  echo "en_ZA.UTF-8 UTF-8"
+} > /mnt/etc/locale.gen
+
+arch-chroot /mnt locale-gen
+
+echo "LANG=en_ZA.UTF-8" > /mnt/etc/locale.conf
+
+echo "=== Set up keyboard layout and re-mappings ==="
+## TODO:...
+
+echo "=== Network configuration ==="
+echo "${COMPUTER_NAME}" > /mnt/etc/hostname
+
+{
+  echo "127.0.0.1   localhost"
+  echo "::1         localhost"
+  echo "127.0.1.1   ${COMPUTER_NAME}.localdomain    ${COMPUTER_NAME}"
+} > /mnt/etc/hosts
+
+arch-chroot /mnt systemctl enable NetworkManager
+
+echo "=== Setup EFI boot manager ==="
+arch-chroot /mnt bootctl install
+
+{
+  echo "default      arch.conf"
+  echo "timeout      1"
+  echo "console-mode max"
+  echo "editor       no"
+} > /mnt/boot/loader/loader.conf
+
+{
+  echo "title Arch Linux"
+  echo "linux /vmlinuz-linux"
+  echo "initrd /intel-ucode.img"
+  echo "initrd /initramfs-linux.img"
+  echo "options root=PARTUUID=${ROOT_PARTITION_UUID} rw"
+} > /mnt/boot/loader/entries/arch.conf
+
+echo "=== Setup sudo rights for members of group wheel ==="
+echo "%wheel ALL=(ALL:ALL) ALL" > /mnt/etc/sudoers.d/01_wheel
+
+echo "=== Installing more packages ==="
+arch-chroot /mnt pacman -Syu
+
+arch-chroot /mnt pacman --noconfirm -S vim \
+                                       mtools \
+                                       dosfstools \
+                                       man-db \
+                                       man-pages \
+                                       sudo \
+                                       bash-completion \
+                                       git \
+                                       sof-firmware \
+                                       sof-tools
+
+
+echo "=== Setup user ==="
+arch-chroot /mnt useradd -m "${TARGET_USERNAME}" -G wheel,audio,video,optical,storage
+echo "Please enter password for ${TARGET_USERNAME}"
+arch-chroot /mnt passwd "${TARGET_USERNAME}"
+
+umount -l /mnt/boot
+umount -l /mnt
+echo "Ready to reboot"
