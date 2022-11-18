@@ -145,7 +145,7 @@ arch-chroot /mnt bash <<EOF
   sed -n 's/.*depends = //p' .SRCINFO | pacman --noconfirm -S -
   su ${USERNAME} -c "makepkg -s --noconfirm"
   mv ./paru*.pkg.tar.zst paru.pkg.tar.zst
-  pacman -U --noconfirm /home/${USERNAME}/paru/paru.pkg.tar.zst
+  pacman -U --noconfirm "/home/${USERNAME}/paru/$(ls paru*.pkg.tar.zst)"
   rm -fr /home/${USERNAME}/paru
   paru -Syu
   exit
