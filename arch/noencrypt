@@ -116,16 +116,32 @@ arch-chroot /mnt pacman --noconfirm -S vim \
                                        bash-completion \
                                        git \
                                        sof-firmware \
-                                       sof-tools
+                                       sof-tools \
+                                       openssh
 
+echo "=== Installing PARU ==="
+
+install_paru() {
+  cd /tmp || true
+  clone https://aur.archlinux.org/paru.git
+  cd paru || true
+  makepkg -si
+}
+
+arch-chroot /mnt bash -c "$(declare -f install_paru) && install_paru && paru"
+
+echo "=== Enable PPP (Required for vpn client) ==="
+arch-chroot /mnt modprobe ppp_generic
 
 echo "=== Setup user ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
 echo "Please enter password for ${USERNAME}"
 arch-chroot /mnt passwd "${USERNAME}"
 
+echo "=== Generate SSH key pair for ${USERNAME} ==="
+ssh-keygen -t ed25519 -f "/mnt/home/${USERNAME}/.ssh/ed25519" -N ''
 
-echo "Installation Completed.  Press <Enter> to reboot..."
+echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
 read -r REBOOT
 umount -l /mnt/boot
 umount -l /mnt
