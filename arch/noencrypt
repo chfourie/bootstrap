@@ -128,7 +128,7 @@ echo "Please enter password for ${USERNAME}"
 arch-chroot /mnt passwd "${USERNAME}"
 
 echo "=== Generate SSH key pair for ${USERNAME} ==="
-arch-chroot /mnt bash -c <<EOF
+arch-chroot /mnt bash <<EOF
   $(declare -p USERNAME)
   cd /home/${USERNAME}
   mkdir .ssh || true
@@ -142,11 +142,13 @@ arch-chroot /mnt bash <<EOF
   su ${USERNAME} -c "
     git clone https://aur.archlinux.org/paru.git
     cd paru
-    makepkg -si --noconfirm
-    cd ..
-    rm -fr paru
-    paru -Syu
+    makepkg -s --noconfirm
+    mv ./paru*.pkg.tar.zst paru.pkg.tar.zst
   "
+  pacman -U --noconfirm /home/${USERNAME}/paru/paru.pkg.tar.zst
+  rm -fr /home/${USERNAME}/paru
+  paru -Syu
+  exit
 EOF
 
 echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
