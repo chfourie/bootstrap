@@ -36,7 +36,7 @@ mount "${ROOT_PARTITION}" /mnt
 mount --mkdir "${EFI_PARTITION}" /mnt/boot
 
 echo "=== Find the 20 most recently updated mirror sites and sort them by download rates ==="
-reflector --connection-timeout 1 --country ZA,GB,US --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+reflector --connection-timeout 1 --download-timeout 1 --country ZA,GB,US --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
 echo "=== Install base linux packages to mounted root ==="
 pacstrap /mnt base \
