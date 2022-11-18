@@ -51,7 +51,6 @@ pacstrap /mnt base \
 
 echo "=== Generate fstab from current mounts below /mnt ==="
 genfstab -U /mnt > /mnt/etc/fstab
-##################################################################################################
 
 echo "=== Set timezone ==="
 ln -sf /mnt/usr/share/zoneinfo/Africa/Johannesburg /mnt/etc/localtime
