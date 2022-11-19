@@ -130,10 +130,7 @@ arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
 echo "Please enter password for ${USERNAME}"
 # arch-chroot /mnt passwd "${USERNAME}"
 
-arch-chroot /mnt bash <<EOF
-  $(declare -p USERNAME USER_PASSWORD)
-  echo "${USER_PASSWORD}" | passwd "${USERNAME}"
-EOF
+echo "${USERNAME}:${USER_PASSWORD}" | chpassw -R /mnt
 
 echo "=== Generate SSH key pair for ${USERNAME} ==="
 arch-chroot /mnt bash <<EOF
