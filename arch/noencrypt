@@ -110,7 +110,7 @@ arch-chroot /mnt bootctl install
 echo "=== Setup sudo rights for members of group wheel ==="
 echo "%wheel ALL=(ALL:ALL) ALL" > /mnt/etc/sudoers.d/01_wheel
 
-echo "=== Temporarily disable password requirement for SUDO operations ==="
+echo "=== Temporarily disable password requirement for members of group wheel ==="
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /mnt/etc/sudoers.d/02_nopwd
 
 echo "=== Installing more packages ==="
@@ -138,15 +138,8 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
 echo "Please enter password for ${USERNAME}"
-# arch-chroot /mnt passwd "${USERNAME}"
 
 echo "${USERNAME}:${USER_PASSWORD}" | chpasswd -R /mnt
-
-#arch-chroot /mnt bash <<EOF
-#  $(declare -p USERNAME USER_PASSWORD)
-#  echo "${USERNAME}:${USER_PASSWORD}" | chpasswd
-#EOF
-
 
 echo "=== Generate SSH key pair for ${USERNAME} ==="
 arch-chroot /mnt bash <<EOF
@@ -164,11 +157,7 @@ arch-chroot /mnt bash <<EOF
   cd /home/${USERNAME}
   su ${USERNAME} -c "git clone https://aur.archlinux.org/paru.git"
   cd paru
-  sed -n 's/.*depends = //p' .SRCINFO | pacman --noconfirm -S -
-  su ${USERNAME} -c "makepkg -s --noconfirm"
-  mv ./paru*.pkg.tar.zst paru.pkg.tar.zst
-  pacman -U --noconfirm "/home/${USERNAME}/paru/$(ls paru*.pkg.tar.zst)"
-  ls *.pkg.tar.zst | xargs -I{} pacman -U --noconfirm /home/${USERNAME}/paru/{}
+  su ${USERNAME} -c "makepkg -si --noconfirm"
   rm -fr /home/${USERNAME}/paru
   paru -Syu
   exit
@@ -192,7 +181,7 @@ arch-chroot /mnt bash <<EOF
   "
 EOF
 
-echo "=== Re-enable password requirement for SUDO operations ==="
+echo "=== Re-enable password requirement for SUDO operations for members of group wheel ==="
 rm /mnt/etc/sudoers.d/02_nopwd
 
 echo
