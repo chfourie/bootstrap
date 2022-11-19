@@ -145,8 +145,6 @@ arch-chroot /mnt bash <<EOF
   "
 EOF
 
-return
-
 echo "=== Installing PARU ==="
 arch-chroot /mnt bash <<EOF
   $(declare -p USERNAME)
