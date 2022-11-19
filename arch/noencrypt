@@ -132,6 +132,12 @@ echo "Please enter password for ${USERNAME}"
 
 echo "${USERNAME}:${USER_PASSWORD}" | chpassw -R /mnt
 
+arch-chroot /mnt bash <<EOF
+  $(declare -p USERNAME USER_PASSWORD)
+  echo "${USERNAME}:${USER_PASSWORD}" | chpassw
+EOF
+
+
 echo "=== Generate SSH key pair for ${USERNAME} ==="
 arch-chroot /mnt bash <<EOF
   $(declare -p USERNAME)
