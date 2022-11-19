@@ -131,7 +131,7 @@ echo "Please enter password for ${USERNAME}"
 # arch-chroot /mnt passwd "${USERNAME}"
 
 arch-chroot /mnt bash <<EOF
-  $(declare -p USER_PASSWORD)
+  $(declare -p USERNAME USER_PASSWORD)
   echo "${USER_PASSWORD}" | passwd "${USERNAME}"
 EOF
 
