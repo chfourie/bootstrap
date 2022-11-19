@@ -171,15 +171,23 @@ arch-chroot /mnt bash <<EOF
   exit
 EOF
 
-echo echo "=== Enabling LightDM service ==="
+echo "=== Enabling LightDM service ==="
+
 arch-chroot /mnt systemctl enable lightdm.service
 
-echo echo "=== Installing Google Chrome, NeoVim ==="
+echo "Press <Enter> to install Google Chrome and NeoVim"
+read -r CONTINUE
 
-arch-chroot /mnt paru --noconfirm -S google-chrome \
-                                     nvim \
-                                     neovim-symlinks \
-                                     xclip
+arch-chroot /mnt bash <<EOF
+  $(declare -p USERNAME)
+  cd /home/${USERNAME}
+  su ${USERNAME} -c "
+    paru --noconfirm -S google-chrome \
+                        nvim \
+                        neovim-symlinks \
+                        xclip
+  "
+EOF
 
 echo
 echo
