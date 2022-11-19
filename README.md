@@ -3,7 +3,7 @@
 ### Connect to the wifi...
 
 ```shell
-iwctl --passphrase <<passphrase>> station wlan0 connect <<network name>>
+iwctl station wlan0 connect <<network name>>
 ```
 
 ### Download and execute bootstrap script
