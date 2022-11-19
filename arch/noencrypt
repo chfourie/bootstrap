@@ -110,6 +110,9 @@ arch-chroot /mnt bootctl install
 echo "=== Setup sudo rights for members of group wheel ==="
 echo "%wheel ALL=(ALL:ALL) ALL" > /mnt/etc/sudoers.d/01_wheel
 
+echo "=== Temporarily disable password requirement for SUDO operations ==="
+echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /mnt/etc/sudoers.d/02_nopwd
+
 echo "=== Installing more packages ==="
 arch-chroot /mnt pacman -Syu
 
@@ -188,6 +191,9 @@ arch-chroot /mnt bash <<EOF
                         xclip
   "
 EOF
+
+echo "=== Re-enable password requirement for SUDO operations ==="
+rm /mnt/etc/sudoers.d/02_nopwd
 
 echo
 echo
