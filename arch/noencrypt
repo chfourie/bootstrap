@@ -129,7 +129,11 @@ echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
 echo "Please enter password for ${USERNAME}"
 # arch-chroot /mnt passwd "${USERNAME}"
-echo "${USER_PASSWORD}" | passwd -R /mnt "${USERNAME}"
+
+arch-chroot /mnt bash <<EOF
+  $(declare -p USER_PASSWORD)
+  echo "${USER_PASSWORD}" | passwd "${USERNAME}"
+EOF
 
 echo "=== Generate SSH key pair for ${USERNAME} ==="
 arch-chroot /mnt bash <<EOF
@@ -140,6 +144,8 @@ arch-chroot /mnt bash <<EOF
     ssh-keygen -t ed25519 -f .ssh/ed25519 -N ''
   "
 EOF
+
+return
 
 echo "=== Installing PARU ==="
 arch-chroot /mnt bash <<EOF
