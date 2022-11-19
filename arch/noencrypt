@@ -181,6 +181,8 @@ arch-chroot /mnt paru --noconfirm -S google-chrome \
                                      neovim-symlinks \
                                      xclip
 
+echo
+echo
 echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
 # shellcheck disable=SC2034
 read -r CONTINUE
