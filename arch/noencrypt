@@ -125,7 +125,7 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        git \
                                        sof-firmware \
                                        sof-tools \
-                                       openssh
+                                       openssh \
                                        qtile \
                                        lxappearance \
                                        nitrogen \
