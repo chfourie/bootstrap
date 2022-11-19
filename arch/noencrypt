@@ -69,7 +69,7 @@ arch-chroot /mnt locale-gen
 echo "LANG=en_ZA.UTF-8" > /mnt/etc/locale.conf
 
 echo "=== Set up keyboard layout and re-mappings ==="
-## TODO:...
+## Need to do keyboard setup here.
 
 echo "=== Network configuration ==="
 echo "${COMPUTER_NAME}" > /mnt/etc/hostname
