@@ -1,16 +1,23 @@
 #!/usr/bin/env bash
 
 lsblk
-echo "Please enter name of target drive (excluding '/dev/')"
-read -r TARGET_DRIVE
-
-echo "Please enter computer name"
-read -r COMPUTER_NAME
-
-echo "Please enter username to create"
-read -r USERNAME
-
+read -rp "Name of target drive: /dev/" TARGET_DRIVE
 TARGET_DRIVE="/dev/${TARGET_DRIVE}"
+
+read -rp "Computer name: " COMPUTER_NAME
+read -rp "Username to create: " USERNAME
+
+while true; do
+  read -rsp "Password for ${USERNAME}: " USER_PASSWORD
+  echo
+  read -rsp "Password for ${USERNAME} (again): " USER_PASSWORD_CONFIRMATION
+  echo
+
+  [ -z "${USER_PASSWORD}${USER_PASSWORD_CONFIRMATION}" ] && echo "Password may not be empty" && continue
+  [ "${USER_PASSWORD}" = "${USER_PASSWORD_CONFIRMATION}" ] && break
+  echo "Passwords entered do not match.  Please try again"
+done
+
 EFI_PARTITION="${TARGET_DRIVE}p1"
 EFI_PARTITION_UUID=$(uuidgen)
 ROOT_PARTITION="${TARGET_DRIVE}p2"
@@ -121,10 +128,11 @@ arch-chroot /mnt pacman --noconfirm -S vim \
 echo "=== Enable PPP (Required for vpn client) ==="
 arch-chroot /mnt modprobe ppp_generic
 
-echo "=== Setup user ==="
+echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
 echo "Please enter password for ${USERNAME}"
-arch-chroot /mnt passwd "${USERNAME}"
+# arch-chroot /mnt passwd "${USERNAME}"
+echo "${USER_PASSWORD}" | passwd -R /mnt "${USERNAME}"
 
 echo "=== Generate SSH key pair for ${USERNAME} ==="
 arch-chroot /mnt bash <<EOF

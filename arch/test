@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-read -rp "Name of target drive: /dev/" TARGET_DEVICE
-TARGET_DEVICE="/dev/${TARGET_DEVICE}"
+read -rp "Name of target drive: /dev/" TARGET_DRIVE
+TARGET_DRIVE="/dev/${TARGET_DRIVE}"
 
 read -rp "Computer name: " COMPUTER_NAME
 read -rp "Username to create: " USERNAME
