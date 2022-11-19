@@ -2,7 +2,7 @@
 
 lsblk
 echo "Please enter name of target drive (excluding '/dev/')"
-read -r TARGET_DEVICE
+read -r TARGET_DRIVE
 
 echo "Please enter computer name"
 read -r COMPUTER_NAME
@@ -10,21 +10,21 @@ read -r COMPUTER_NAME
 echo "Please enter username to create"
 read -r USERNAME
 
-TARGET_DEVICE="/dev/${TARGET_DEVICE}"
-EFI_PARTITION="${TARGET_DEVICE}p1"
+TARGET_DRIVE="/dev/${TARGET_DRIVE}"
+EFI_PARTITION="${TARGET_DRIVE}p1"
 EFI_PARTITION_UUID=$(uuidgen)
-ROOT_PARTITION="${TARGET_DEVICE}p2"
+ROOT_PARTITION="${TARGET_DRIVE}p2"
 ROOT_PARTITION_UUID=$(uuidgen)
 
-echo "setting up ${TARGET_DEVICE}..."
+echo "setting up ${TARGET_DRIVE}..."
 
 echo "=== Enable Network Time Protocol ==="
 timedatectl set-ntp true
 
 echo "=== Set up partition table with new partitions ==="
-sgdisk --zap-all "${TARGET_DEVICE}"
-sgdisk -n 0:0:+500MiB -t 0:ef00 -c 0:boot -u 0:"${EFI_PARTITION_UUID}" "${TARGET_DEVICE}"
-sgdisk -n 0:0:0 -t 0:8300 -c 0:root -u 0:"${ROOT_PARTITION_UUID}" "${TARGET_DEVICE}"
+sgdisk --zap-all "${TARGET_DRIVE}"
+sgdisk -n 0:0:+500MiB -t 0:ef00 -c 0:boot -u 0:"${EFI_PARTITION_UUID}" "${TARGET_DRIVE}"
+sgdisk -n 0:0:0 -t 0:8300 -c 0:root -u 0:"${ROOT_PARTITION_UUID}" "${TARGET_DRIVE}"
 e2fsck -fy "${ROOT_PARTITION}"
 
 echo "=== Make filesystems on new partitions ==="
