@@ -125,9 +125,6 @@ arch-chroot /mnt pacman --noconfirm -S vim \
                                        sof-tools \
                                        openssh
 
-echo "=== Enable PPP (Required for vpn client) ==="
-arch-chroot /mnt modprobe ppp_generic
-
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
 echo "Please enter password for ${USERNAME}"
