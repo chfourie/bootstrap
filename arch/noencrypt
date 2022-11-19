@@ -164,8 +164,7 @@ echo "=== Enabling LightDM service ==="
 
 arch-chroot /mnt systemctl enable lightdm.service
 
-echo "Press <Enter> to install Google Chrome and NeoVim"
-read -r CONTINUE
+echo "Installing Google Chrome and NeoVim"
 
 arch-chroot /mnt bash <<EOF
   $(declare -p USERNAME)
