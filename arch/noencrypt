@@ -116,8 +116,7 @@ echo "%wheel ALL=(ALL:ALL) ALL" > /mnt/etc/sudoers.d/01_wheel
 echo "=== Installing more packages ==="
 arch-chroot /mnt pacman -Syu
 
-arch-chroot /mnt pacman --noconfirm -S vim \
-                                       mtools \
+arch-chroot /mnt pacman --noconfirm -S mtools \
                                        dosfstools \
                                        man-db \
                                        man-pages \
@@ -177,7 +176,10 @@ arch-chroot /mnt paru -S qtile \
                            picom \
                            lightdm \
                            lightdm-gtk-greeter \
-                           google-chrome
+                           google-chrome \
+                           nvim \
+                           neovim-symlinks \
+                           xclip
 
 arch-chroot /mnt systemctl enable lightdm.service
 
