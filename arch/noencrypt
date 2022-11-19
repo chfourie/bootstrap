@@ -168,18 +168,18 @@ EOF
 
 echo "Press <Enter> to set up QTile etc, or <C-c> to exit this script..."
 
-arch-chroot /mnt paru -S qtile \
-                           lxappearance \
-                           nitrogen \
-                           thunar \
-                           alacritty \
-                           picom \
-                           lightdm \
-                           lightdm-gtk-greeter \
-                           google-chrome \
-                           nvim \
-                           neovim-symlinks \
-                           xclip
+arch-chroot /mnt paru --noconfirm -S qtile \
+                                     lxappearance \
+                                     nitrogen \
+                                     thunar \
+                                     alacritty \
+                                     picom \
+                                     lightdm \
+                                     lightdm-gtk-greeter \
+                                     google-chrome \
+                                     nvim \
+                                     neovim-symlinks \
+                                     xclip
 
 arch-chroot /mnt systemctl enable lightdm.service
 
