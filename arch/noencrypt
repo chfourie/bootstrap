@@ -172,7 +172,7 @@ arch-chroot /mnt bash <<EOF
   cd /home/${USERNAME}
   su ${USERNAME} -c "
     paru --noconfirm -S google-chrome \
-                        nvim \
+                        neovim \
                         neovim-symlinks \
                         xclip
   "
