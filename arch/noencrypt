@@ -18,9 +18,6 @@ while true; do
   echo "Passwords entered do not match.  Please try again"
 done
 
-read -rp "Wifi network name: " WIFI_NETWORK
-read -rsp "Wifi Password: " WIFI_PASSWORD
-
 EFI_PARTITION="${TARGET_DRIVE}p1"
 EFI_PARTITION_UUID=$(uuidgen)
 ROOT_PARTITION="${TARGET_DRIVE}p2"
