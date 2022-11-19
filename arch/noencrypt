@@ -174,15 +174,15 @@ arch-chroot /mnt bash <<EOF
   exit
 EOF
 
+echo echo "=== Enabling LightDM service ==="
+arch-chroot /mnt systemctl enable lightdm.service
+
 echo echo "=== Installing Google Chrome, NeoVim ==="
 
-arch-chroot /mnt sudo paru --noconfirm -S google-chrome \
+arch-chroot /mnt paru --noconfirm -S google-chrome \
                                      nvim \
                                      neovim-symlinks \
                                      xclip
-
-echo echo "=== Enabling LightDM service ==="
-arch-chroot /mnt systemctl enable lightdm.service
 
 echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
 # shellcheck disable=SC2034
