@@ -126,6 +126,14 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        sof-firmware \
                                        sof-tools \
                                        openssh
+                                       qtile \
+                                       lxappearance \
+                                       nitrogen \
+                                       thunar \
+                                       alacritty \
+                                       picom \
+                                       lightdm \
+                                       lightdm-gtk-greeter
 
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
@@ -166,34 +174,19 @@ arch-chroot /mnt bash <<EOF
   exit
 EOF
 
-echo "Press <Enter> to set up QTile etc, or <C-c> to exit this script..."
+echo echo "=== Installing Google Chrome, NeoVim ==="
 
-arch-chroot /mnt paru --noconfirm -S qtile \
-                                     lxappearance \
-                                     nitrogen \
-                                     thunar \
-                                     alacritty \
-                                     picom \
-                                     lightdm \
-                                     lightdm-gtk-greeter
+arch-chroot /mnt sudo paru --noconfirm -S google-chrome \
+                                     nvim \
+                                     neovim-symlinks \
+                                     xclip
 
-arch-chroot /mnt bash <<EOF
-  $(declare -p USERNAME)
-  cd /home/${USERNAME}
-  su ${USERNAME} -c "
-    sudo paru --noconfirm -S google-chrome \
-                             nvim \
-                             neovim-symlinks \
-                             xclip
-  "
-EOF
-
-
+echo echo "=== Enabling LightDM service ==="
 arch-chroot /mnt systemctl enable lightdm.service
 
 echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
 # shellcheck disable=SC2034
-read -r REBOOT
+read -r CONTINUE
 umount -l /mnt/boot
 umount -l /mnt
 reboot now
