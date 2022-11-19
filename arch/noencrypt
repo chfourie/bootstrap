@@ -137,7 +137,6 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
 
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
-echo "Please enter password for ${USERNAME}"
 
 echo "${USERNAME}:${USER_PASSWORD}" | chpasswd -R /mnt
 
@@ -154,13 +153,11 @@ EOF
 echo "=== Installing PARU ==="
 arch-chroot /mnt bash <<EOF
   $(declare -p USERNAME)
-  cd /home/${USERNAME}
+  cd /tmp
   su ${USERNAME} -c "git clone https://aur.archlinux.org/paru.git"
   cd paru
   su ${USERNAME} -c "makepkg -si --noconfirm"
-  rm -fr /home/${USERNAME}/paru
-  paru -Syu
-  exit
+  paru -Syu --noconfirm
 EOF
 
 echo "=== Enabling LightDM service ==="
