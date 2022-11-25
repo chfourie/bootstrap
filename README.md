@@ -19,3 +19,9 @@ If you are actively working on the script, you might need to run curl as follows
 ```shell
 curl -LO -H 'Cache-Control: no-cache, no-store' https://github.com/chfourie/bootstrap/raw/master/arch/noencrypt  
 ```
+### After first reboot
+
+```shell
+sudo modprobe ppp_generic
+sudo nmcli device wifi connect <<network name>> password <<PASSWORD>>
+```

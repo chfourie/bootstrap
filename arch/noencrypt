@@ -75,8 +75,28 @@ arch-chroot /mnt locale-gen
 
 echo "LANG=en_ZA.UTF-8" > /mnt/etc/locale.conf
 
-echo "=== Set up keyboard layout and re-mappings ==="
-## Need to do keyboard setup here.
+echo "=== Key mappings for Apple keyboard ==="
+{
+  echo "options hid_apple fnmode=2"
+  echo "options hid_apple swap_opt_cmd=1"
+  echo "options hid_apple iso_layout=0"
+} >> /etc/modprobe.d/hid_apple.conf
+
+echo "=== Swap caps and escape keys (X) ==="
+echo "setxkbmap -option caps:swapescape" >> /etc/xprofile
+
+echo "=== Swap caps and escape keys (tty) ==="
+mkdir -p /usr/local/share/kbd/keymaps
+
+{
+  echo "keycode 1 = Caps_Lock"
+  echo "keycode 58 = Escape"
+} >> /usr/local/share/kbd/keymaps/custom.keymap
+
+echo "KEYMAP=/usr/local/share/kbd/keymaps/custom.keymap" >> /etc/vconsole.conf
+
+echo "=== Regenerate initramfs ==="
+mkinitcpio -P
 
 echo "=== Network configuration ==="
 echo "${COMPUTER_NAME}" > /mnt/etc/hostname
@@ -164,7 +184,7 @@ echo "=== Enabling LightDM service ==="
 
 arch-chroot /mnt systemctl enable lightdm.service
 
-echo "Installing Google Chrome and NeoVim"
+echo "=== Installing Google Chrome and NeoVim ==="
 
 arch-chroot /mnt bash <<EOF
   $(declare -p USERNAME)
