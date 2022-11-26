@@ -80,20 +80,20 @@ echo "=== Key mappings for Apple keyboard ==="
   echo "options hid_apple fnmode=2"
   echo "options hid_apple swap_opt_cmd=1"
   echo "options hid_apple iso_layout=0"
-} >> /etc/modprobe.d/hid_apple.conf
+} >> /mnt/etc/modprobe.d/hid_apple.conf
 
 echo "=== Swap caps and escape keys (X) ==="
-echo "setxkbmap -option caps:swapescape" >> /etc/xprofile
+echo "setxkbmap -option caps:swapescape" >> /mnt/etc/xprofile
 
 echo "=== Swap caps and escape keys (tty) ==="
-mkdir -p /usr/local/share/kbd/keymaps
+mkdir -p /mnt/usr/local/share/kbd/keymaps
 
 {
   echo "keycode 1 = Caps_Lock"
   echo "keycode 58 = Escape"
-} >> /usr/local/share/kbd/keymaps/custom.keymap
+} >> /mnt/usr/local/share/kbd/keymaps/custom.keymap
 
-echo "KEYMAP=/usr/local/share/kbd/keymaps/custom.keymap" >> /etc/vconsole.conf
+echo "KEYMAP=/usr/local/share/kbd/keymaps/custom.keymap" >> /mnt/etc/vconsole.conf
 
 echo "=== Regenerate initramfs ==="
 mkinitcpio -P
