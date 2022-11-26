@@ -93,7 +93,10 @@ mkdir -p /mnt/usr/local/share/kbd/keymaps
   echo "keycode 58 = Escape"
 } >> /mnt/usr/local/share/kbd/keymaps/custom.keymap
 
-echo "KEYMAP=/usr/local/share/kbd/keymaps/custom.keymap" >> /mnt/etc/vconsole.conf
+{
+  echo "KEYMAP=us"
+  echo "KEYMAP_TOGGLE=/usr/local/share/kbd/keymaps/custom.keymap"
+} >> /mnt/etc/vconsole.conf
 
 echo "=== Network configuration ==="
 echo "${COMPUTER_NAME}" > /mnt/etc/hostname
