@@ -209,7 +209,7 @@ echo "=== Re-enable password requirement for SUDO operations for members of grou
 rm /mnt/etc/sudoers.d/02_nopwd
 
 echo "=== Regenerate initramfs ==="
-mkinitcpio -P
+arch-chroot /mnt mkinitcpio -P
 
 echo
 echo
