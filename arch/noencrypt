@@ -145,8 +145,11 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        git \
                                        sof-firmware \
                                        sof-tools \
-                                       openssh \
-                                       qtile \
+                                       openssh
+
+echo "=== Installing windowing manager and related packages ==="
+
+arch-chroot /mnt pacman --noconfirm -S qtile \
                                        lxappearance \
                                        nitrogen \
                                        thunar \
@@ -154,6 +157,13 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        picom \
                                        lightdm \
                                        lightdm-gtk-greeter
+
+echo "=== Install audio packages ==="
+
+arch-chroot /mnt pacman --noconfirm -S pipewire \
+                                       pipewire-alsa \
+                                       pipewire-pulse \
+                                       wireplumber
 
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
