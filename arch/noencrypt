@@ -95,9 +95,6 @@ mkdir -p /mnt/usr/local/share/kbd/keymaps
 
 echo "KEYMAP=/usr/local/share/kbd/keymaps/custom.keymap" >> /mnt/etc/vconsole.conf
 
-echo "=== Regenerate initramfs ==="
-mkinitcpio -P
-
 echo "=== Network configuration ==="
 echo "${COMPUTER_NAME}" > /mnt/etc/hostname
 
@@ -210,6 +207,9 @@ EOF
 
 echo "=== Re-enable password requirement for SUDO operations for members of group wheel ==="
 rm /mnt/etc/sudoers.d/02_nopwd
+
+echo "=== Regenerate initramfs ==="
+mkinitcpio -P
 
 echo
 echo
