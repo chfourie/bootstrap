@@ -163,7 +163,8 @@ echo "=== Install audio packages ==="
 arch-chroot /mnt pacman --noconfirm -S pipewire \
                                        pipewire-alsa \
                                        pipewire-pulse \
-                                       wireplumber
+                                       wireplumber \
+                                       pulsemixer
 
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
