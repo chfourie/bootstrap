@@ -143,8 +143,6 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        sudo \
                                        bash-completion \
                                        git \
-                                       sof-firmware \
-                                       sof-tools \
                                        openssh
 
 echo "=== Installing windowing manager and related packages ==="
@@ -160,7 +158,9 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
 
 echo "=== Install audio packages ==="
 
-arch-chroot /mnt pacman --noconfirm -S pipewire \
+arch-chroot /mnt pacman --noconfirm -S sof-firmware \
+                                       sof-tools \
+                                       pipewire \
                                        pipewire-alsa \
                                        pipewire-pulse \
                                        wireplumber \
