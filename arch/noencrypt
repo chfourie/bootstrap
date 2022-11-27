@@ -147,7 +147,8 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        bat \
                                        fish \
                                        starship \
-                                       exa
+                                       exa \
+                                       htop
 
 echo "=== Installing windowing manager and related packages ==="
 
