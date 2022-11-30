@@ -181,7 +181,8 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        alacritty \
                                        picom \
                                        lightdm \
-                                       lightdm-gtk-greeter
+                                       lightdm-gtk-greeter \
+                                       network-manager-applet
 
 echo "=== Install audio packages ==="
 
