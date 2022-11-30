@@ -48,7 +48,7 @@ e2fsck -fy "${ROOT_PARTITION}"
 
 echo "=== Set up encryption on root partition ==="
 echo "${ENCRYPTION_PASSWORD}" | cryptsetup -q luksFormat "${ROOT_PARTITION}"
-cryptsetup open "${ROOT_PARTITION}" root
+echo "${ENCRYPTION_PASSWORD}" | cryptsetup -q open "${ROOT_PARTITION}" root
 
 echo "=== Make filesystems on new partitions ==="
 mkfs.fat -F 32 "${EFI_PARTITION}"
