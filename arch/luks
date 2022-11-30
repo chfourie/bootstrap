@@ -1,0 +1,252 @@
+#!/usr/bin/env bash
+
+lsblk
+read -rp "Name of target drive: /dev/" TARGET_DRIVE
+TARGET_DRIVE="/dev/${TARGET_DRIVE}"
+0
+read -rp "Computer name: " COMPUTER_NAME
+read -rp "Username to create: " USERNAME
+
+while true; do
+  read -rsp "Password for ENCRYPTION: " ENCRYPTION_PASSWORD
+  echo
+  read -rsp "Password for ENCRYPTION (again): " ENCRYPTION_PASSWORD_CONFIRMATION
+  echo
+
+  [ -z "${ENCRYPTION_PASSWORD}${ENCRYPTION_PASSWORD_CONFIRMATION}" ] && echo "Password may not be empty" && continue
+  [ "${ENCRYPTION_PASSWORD}" = "${ENCRYPTION_PASSWORD_CONFIRMATION}" ] && break
+  echo "Passwords entered do not match.  Please try again"
+done
+
+while true; do
+  read -rsp "Password for ${USERNAME}: " USER_PASSWORD
+  echo
+  read -rsp "Password for ${USERNAME} (again): " USER_PASSWORD_CONFIRMATION
+  echo
+
+  [ -z "${USER_PASSWORD}${USER_PASSWORD_CONFIRMATION}" ] && echo "Password may not be empty" && continue
+  [ "${USER_PASSWORD}" = "${USER_PASSWORD_CONFIRMATION}" ] && break
+  echo "Passwords entered do not match.  Please try again"
+done
+
+EFI_PARTITION="${TARGET_DRIVE}p1"
+EFI_PARTITION_UUID=$(uuidgen)
+ROOT_PARTITION="${TARGET_DRIVE}p2"
+ROOT_PARTITION_UUID=$(uuidgen)
+
+echo "setting up ${TARGET_DRIVE}..."
+
+echo "=== Enable Network Time Protocol ==="
+timedatectl set-ntp true
+
+echo "=== Set up partition table with new partitions ==="
+wipefs -a "${TARGET_DRIVE}"
+# sgdisk --zap-all "${TARGET_DRIVE}" # Replaced by wipefs command
+sgdisk -n 0:0:+500MiB -t 0:ef00 -c 0:boot -u 0:"${EFI_PARTITION_UUID}" "${TARGET_DRIVE}"
+sgdisk -n 0:0:0 -t 0:8300 -c 0:root -u 0:"${ROOT_PARTITION_UUID}" "${TARGET_DRIVE}"
+e2fsck -fy "${ROOT_PARTITION}"
+
+echo "=== Set up encryption on root partition ==="
+echo "${ENCRYPTION_PASSWORD}" | cryptsetup -q luksFormat "${ROOT_PARTITION}"
+cryptsetup open "${ROOT_PARTITION}" root
+
+echo "=== Make filesystems on new partitions ==="
+mkfs.fat -F 32 "${EFI_PARTITION}"
+mkfs.ext4 -qFF /dev/mapper/root
+
+echo "=== Mount partitions ==="
+mount /dev/mapper/root /mnt
+mount --mkdir "${EFI_PARTITION}" /mnt/boot
+
+echo "=== Find the 20 most recently updated mirror sites and sort them by download rates ==="
+reflector --country ZA,GB,US --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+
+echo "=== Install base linux packages to mounted root ==="
+pacstrap /mnt base \
+              linux \
+              linux-firmware \
+              base-devel \
+              linux-headers \
+              intel-ucode \
+              networkmanager \
+              wireless_tools \
+              wpa_supplicant
+
+echo "=== Generate fstab from current mounts below /mnt ==="
+genfstab -U /mnt > /mnt/etc/fstab
+
+echo "=== Set timezone ==="
+arch-chroot /mnt ln -sf /usr/share/zoneinfo/Africa/Johannesburg /etc/localtime
+
+echo "=== Sync hardware clock to system clock ==="
+arch-chroot /mnt hwclock --systohc
+
+echo "=== Set up localization ==="
+{
+  echo "af_ZA.UTF-8 UTF-8"
+  echo "en_ZA.UTF-8 UTF-8"
+} > /mnt/etc/locale.gen
+
+arch-chroot /mnt locale-gen
+
+echo "LANG=en_ZA.UTF-8" > /mnt/etc/locale.conf
+
+echo "=== Key mappings for Apple keyboard ==="
+{
+  echo "options hid_apple fnmode=2"
+  echo "options hid_apple swap_opt_cmd=1"
+  echo "options hid_apple iso_layout=0"
+} >> /mnt/etc/modprobe.d/hid_apple.conf
+
+echo "=== Swap caps and escape keys (X) ==="
+echo "setxkbmap -option caps:swapescape" >> /mnt/etc/xprofile
+
+echo "=== Swap caps and escape keys (tty) ==="
+mkdir -p /mnt/usr/local/share/kbd/keymaps
+
+{
+  echo "keycode 1 = Caps_Lock"
+  echo "keycode 58 = Escape"
+} >> /mnt/usr/local/share/kbd/keymaps/custom.keymap
+
+{
+  echo "KEYMAP=us"
+  echo "KEYMAP_TOGGLE=/usr/local/share/kbd/keymaps/custom.keymap"
+} >> /mnt/etc/vconsole.conf
+
+echo "=== Network configuration ==="
+echo "${COMPUTER_NAME}" > /mnt/etc/hostname
+
+{
+  echo "127.0.0.1   localhost"
+  echo "::1         localhost"
+  echo "127.0.1.1   ${COMPUTER_NAME}.localdomain    ${COMPUTER_NAME}"
+} > /mnt/etc/hosts
+
+arch-chroot /mnt systemctl enable NetworkManager
+
+echo "=== Setup EFI boot manager ==="
+arch-chroot /mnt bootctl install
+
+{
+  echo "default      arch.conf"
+  echo "timeout      1"
+  echo "console-mode max"
+  echo "editor       no"
+} > /mnt/boot/loader/loader.conf
+
+{
+  echo "title Arch Linux"
+  echo "linux /vmlinuz-linux"
+  echo "initrd /intel-ucode.img"
+  echo "initrd /initramfs-linux.img"
+  echo "options cryptdevice=UUID=${ROOT_PARTITION_UUID}:root root=/dev/mapper/root rw"
+} > /mnt/boot/loader/entries/arch.conf
+
+echo "=== Setup sudo rights for members of group wheel ==="
+echo "%wheel ALL=(ALL:ALL) ALL" > /mnt/etc/sudoers.d/01_wheel
+
+echo "=== Temporarily disable password requirement for members of group wheel ==="
+echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /mnt/etc/sudoers.d/99_nopwd
+
+echo "=== Installing more packages ==="
+arch-chroot /mnt pacman -Syu
+
+arch-chroot /mnt pacman --noconfirm -S mtools \
+                                       dosfstools \
+                                       man-db \
+                                       man-pages \
+                                       sudo \
+                                       bash-completion \
+                                       git \
+                                       openssh \
+                                       bat \
+                                       fish \
+                                       starship \
+                                       exa \
+                                       htop
+
+echo "=== Installing windowing manager and related packages ==="
+
+arch-chroot /mnt pacman --noconfirm -S qtile \
+                                       lxappearance \
+                                       nitrogen \
+                                       thunar \
+                                       alacritty \
+                                       picom \
+                                       lightdm \
+                                       lightdm-gtk-greeter
+
+echo "=== Install audio packages ==="
+
+arch-chroot /mnt pacman --noconfirm -S sof-firmware \
+                                       sof-tools \
+                                       pipewire \
+                                       pipewire-alsa \
+                                       pipewire-pulse \
+                                       wireplumber \
+                                       pulsemixer
+
+echo "=== Setup user ${USERNAME} ==="
+arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
+
+echo "${USERNAME}:${USER_PASSWORD}" | chpasswd -R /mnt
+
+echo "=== Generate SSH key pair for ${USERNAME} ==="
+arch-chroot /mnt bash <<EOF
+  $(declare -p USERNAME)
+  cd /home/${USERNAME}
+  su ${USERNAME} -c "
+    mkdir .ssh || true
+    ssh-keygen -t ed25519 -f .ssh/ed25519 -N ''
+  "
+EOF
+
+echo "=== Installing PARU ==="
+arch-chroot /mnt bash <<EOF
+  $(declare -p USERNAME)
+  cd /tmp
+  su ${USERNAME} -c "git clone https://aur.archlinux.org/paru.git"
+  cd paru
+  su ${USERNAME} -c "makepkg -si --noconfirm"
+  paru -Syu --noconfirm
+EOF
+
+echo "=== Enabling LightDM service ==="
+
+arch-chroot /mnt systemctl enable lightdm.service
+
+echo "=== Installing Google Chrome and NeoVim ==="
+
+arch-chroot /mnt bash <<EOF
+  $(declare -p USERNAME)
+  cd /home/${USERNAME}
+  su ${USERNAME} -c "
+    paru --noconfirm -S google-chrome \
+                        neovim \
+                        neovim-symlinks \
+                        xclip
+  "
+EOF
+
+echo "=== Re-enable password requirement for SUDO operations for members of group wheel ==="
+rm /mnt/etc/sudoers.d/99_nopwd
+
+echo "=== Set up mkinitcpio hooks and regenerate initramfs ==="
+sed -i 's/^HOOKS=/# HOOKS=/' /mnt/etc/mkinitcpio.conf
+
+{
+  echo
+  echo "HOOKS=(base udev autodetect modconf keyboard keymap consolefont block encrypt filesystems fsck)"
+} >> /mnt/etc/mkinitcpio.conf
+
+arch-chroot /mnt mkinitcpio -P
+
+echo
+echo
+echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
+# shellcheck disable=SC2034
+read -r CONTINUE
+umount -l /mnt/boot
+umount -l /mnt
+reboot now
