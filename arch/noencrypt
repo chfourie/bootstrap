@@ -182,7 +182,7 @@ arch-chroot /mnt bash <<EOF
   cd /home/${USERNAME}
   su ${USERNAME} -c "
     mkdir .ssh || true
-    ssh-keygen -t ed25519 -f .ssh/ed25519 -N ''
+    ssh-keygen -t ed25519 -f .ssh/id_ed25519 -N ''
   "
 EOF
 
