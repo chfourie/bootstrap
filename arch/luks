@@ -146,7 +146,7 @@ arch-chroot /mnt bootctl install
   echo "linux /vmlinuz-linux"
   echo "initrd /intel-ucode.img"
   echo "initrd /initramfs-linux.img"
-  echo "options cryptdevice=UUID=${ROOT_PARTITION_UUID}:root root=/dev/mapper/root rw"
+  echo "options cryptdevice=PARTUUID=${ROOT_PARTITION_UUID}:root root=/dev/mapper/root rw"
 } > /mnt/boot/loader/entries/arch.conf
 
 echo "=== Setup sudo rights for members of group wheel ==="
