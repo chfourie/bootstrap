@@ -160,7 +160,10 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        picom \
                                        lightdm \
                                        lightdm-gtk-greeter \
-                                       network-manager-applet
+                                       network-manager-applet \
+                                       libnotify \
+                                       dunst \
+                                       volumeicon
 
 echo "=== Install audio packages ==="
 
