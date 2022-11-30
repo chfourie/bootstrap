@@ -3,20 +3,20 @@
 lsblk
 read -rp "Name of target drive: /dev/" TARGET_DRIVE
 TARGET_DRIVE="/dev/${TARGET_DRIVE}"
-0
-read -rp "Computer name: " COMPUTER_NAME
-read -rp "Username to create: " USERNAME
 
 while true; do
-  read -rsp "Password for ENCRYPTION: " ENCRYPTION_PASSWORD
+  read -rsp "Password for DISK ENCRYPTION: " ENCRYPTION_PASSWORD
   echo
-  read -rsp "Password for ENCRYPTION (again): " ENCRYPTION_PASSWORD_CONFIRMATION
+  read -rsp "Password for DISK ENCRYPTION (again): " ENCRYPTION_PASSWORD_CONFIRMATION
   echo
 
   [ -z "${ENCRYPTION_PASSWORD}${ENCRYPTION_PASSWORD_CONFIRMATION}" ] && echo "Password may not be empty" && continue
   [ "${ENCRYPTION_PASSWORD}" = "${ENCRYPTION_PASSWORD_CONFIRMATION}" ] && break
   echo "Passwords entered do not match.  Please try again"
 done
+
+read -rp "Computer name: " COMPUTER_NAME
+read -rp "Username to create: " USERNAME
 
 while true; do
   read -rsp "Password for ${USERNAME}: " USER_PASSWORD
