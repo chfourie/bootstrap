@@ -173,7 +173,8 @@ arch-chroot /mnt pacman --noconfirm -S sof-firmware \
                                        pipewire-alsa \
                                        pipewire-pulse \
                                        wireplumber \
-                                       pulsemixer
+                                       pulsemixer \
+                                       alsa-tools
 
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
