@@ -185,7 +185,8 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        network-manager-applet \
                                        libnotify \
                                        dunst \
-                                       volumeicon
+                                       volumeicon \
+                                       arandr
 
 echo "=== Install audio packages ==="
 
