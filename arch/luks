@@ -203,7 +203,8 @@ arch-chroot /mnt pacman --noconfirm -S sof-firmware \
                                        pipewire-pulse \
                                        wireplumber \
                                        pulsemixer \
-                                       alsa-tools
+                                       alsa-tools \
+                                       pavucontrol
 
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
@@ -267,17 +268,6 @@ EOF
 cat <<EOF >> /mnt/etc/acpi/events/lid
 event=button/lid.*
 action=/usr/local/sbin/autoconfigure-screens
-EOF
-
-echo "=== Install developer tools ==="
-arch-chroot /mnt pacman --noconfirm -S jdk17-openjdk 
-
-arch-chroot /mnt bash <<EOF
-  $(declare -p USERNAME)
-  cd /home/${USERNAME}
-  su ${USERNAME} -c "
-    paru --noconfirm -S jetbrains-toolbox
-  "
 EOF
 
 
