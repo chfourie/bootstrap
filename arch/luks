@@ -202,7 +202,7 @@ arch-chroot /mnt pacman --noconfirm -S sof-firmware \
                                        pipewire-pulse \
                                        wireplumber \
                                        pulsemixer \
-                                       alsa-tools \
+                                       alsa-utils \
                                        pavucontrol
 
 echo "=== Setup user ${USERNAME} ==="
