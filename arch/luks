@@ -181,7 +181,6 @@ echo "=== Installing windowing manager and related packages ==="
 
 arch-chroot /mnt pacman --noconfirm -S qtile \
                                        lxappearance \
-                                       nitrogen \
                                        thunar \
                                        alacritty \
                                        picom \
