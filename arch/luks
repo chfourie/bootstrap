@@ -17,6 +17,7 @@ done
 
 read -rp "Computer name: " COMPUTER_NAME
 read -rp "Username to create: " USERNAME
+read -rp "User email: " USER_EMAIL
 
 while true; do
   read -rsp "Password for ${USERNAME}: " USER_PASSWORD
@@ -170,7 +171,11 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        fish \
                                        starship \
                                        exa \
-                                       htop
+                                       htop \
+				                               acpid
+
+echo "=== Enabling ACPID ==="
+arch-chroot /mnt enable acpid
 
 echo "=== Installing windowing manager and related packages ==="
 
@@ -185,7 +190,9 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        network-manager-applet \
                                        libnotify \
                                        dunst \
-                                       volumeicon
+                                       volumeicon \
+				                               arandr \
+				                               xlayoutdisplay
 
 echo "=== Install audio packages ==="
 
@@ -209,7 +216,7 @@ arch-chroot /mnt bash <<EOF
   cd /home/${USERNAME}
   su ${USERNAME} -c "
     mkdir .ssh || true
-    ssh-keygen -t ed25519 -f .ssh/id_ed25519 -N ''
+    ssh-keygen -t ed25519 -f .ssh/id_ed25519 -N '' -C ${USER_EMAIL}
   "
 EOF
 
@@ -240,6 +247,39 @@ arch-chroot /mnt bash <<EOF
                         nerd-fonts-jetbrains-mono
   "
 EOF
+
+echo "=== Set up automatic display configuration ==="
+
+cat <<EOF >> /mnt/usr/local/sbin/autoconfigure-screens
+#!/bin/sh
+
+export HOME=/home/${USERNAME}
+export DISPLAY=:0
+export XAUTHORITY=${HOME}/.Xauthority
+
+xlayoutdisplay -w 3 >> /tmp/xlayoutdisplay.log 2>&1
+EOF
+
+cat <<EOF >> /mnt/etc/udev/rules.d/99-autoconfigure-screens.rules
+ACTION=="change", SUBSYSTEM=="drm", RUN+="/usr/local/sbin/autoconfigure-screens"
+EOF
+
+cat <<EOF >> /mnt/etc/acpi/events/lid
+event=button/lid.*
+action=/usr/local/sbin/autoconfigure-screens
+EOF
+
+echo "=== Install developer tools ==="
+arch-chroot /mnt pacman --noconfirm -S jdk17-openjdk 
+
+arch-chroot /mnt bash <<EOF
+  $(declare -p USERNAME)
+  cd /home/${USERNAME}
+  su ${USERNAME} -c "
+    paru --noconfirm -S jetbrains-toolbox
+  "
+EOF
+
 
 echo "=== Re-enable password requirement for SUDO operations for members of group wheel ==="
 rm /mnt/etc/sudoers.d/99_nopwd
