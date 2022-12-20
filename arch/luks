@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+pacman-key --init
+
 lsblk
 read -rp "Name of target drive: /dev/" TARGET_DRIVE_NAME
 TARGET_DRIVE="/dev/${TARGET_DRIVE_NAME}"
