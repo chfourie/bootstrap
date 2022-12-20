@@ -23,5 +23,7 @@ curl -LO -H 'Cache-Control: no-cache, no-store' https://github.com/chfourie/boot
 
 ```shell
 sudo modprobe ppp_generic
-sudo nmcli device wifi connect <<network name>> password <<PASSWORD>>
+# Rather use the applet so that we don't have to enter our password on the console
+# sudo nmcli device wifi connect <<network name>> password <<PASSWORD>>
+nm-applet
 ```
