@@ -186,6 +186,7 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        lxappearance \
                                        thunar \
                                        alacritty \
+                                       xterm \
                                        picom \
                                        lightdm \
                                        lightdm-gtk-greeter \
@@ -282,9 +283,6 @@ sed -i 's/ filesystems/ encrypt filesystems/' /mnt/etc/mkinitcpio.conf
 
 arch-chroot /mnt mkinitcpio -P
 
-echo
-echo
-echo "Installation Completed.  Press <Enter> to unmount and reboot, or <C-c> to exit this script..."
 # shellcheck disable=SC2034
 read -r CONTINUE
 umount -l /mnt/boot
