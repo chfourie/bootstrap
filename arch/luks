@@ -195,8 +195,7 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        dunst \
                                        volumeicon \
 				                               arandr \
-				                               xlayoutdisplay \
-				                               imwheel
+				                               xlayoutdisplay
 
 echo "=== Install audio packages ==="
 
