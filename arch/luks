@@ -79,17 +79,13 @@ reflector --country ZA,GB,US --latest 20 --sort rate --save /etc/pacman.d/mirror
 echo "=== Install base linux packages to mounted root ==="
 pacstrap /mnt base \
               linux \
-              linux-firmware
-
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
-
-arch-chroot /mnt pacman --noconfirm -S base-devel \
-                                       linux-headers \
-                                       intel-ucode \
-                                       networkmanager \
-                                       wireless_tools \
-                                       wpa_supplicant
+              linux-firmware \
+              base-devel \
+              linux-headers \
+              intel-ucode \
+              networkmanager \
+              wireless_tools \
+              wpa_supplicant
 
 echo "[[ PRESS <ENTER> TO CONTINUE ]]"
 read -r CONTINUE
