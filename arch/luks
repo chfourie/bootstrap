@@ -68,9 +68,6 @@ echo "=== Mount partitions ==="
 mount /dev/mapper/root /mnt
 mount --mkdir "${EFI_PARTITION}" /mnt/boot
 
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
-
 echo "=== Find the 20 most recently updated mirror sites and sort them by download rates ==="
 reflector --country ZA,GB,US --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
@@ -87,9 +84,6 @@ pacstrap /mnt base \
               networkmanager \
               wireless_tools \
               wpa_supplicant
-
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
 
 echo "=== Generate fstab from current mounts below /mnt ==="
 genfstab -U /mnt > /mnt/etc/fstab
@@ -109,9 +103,6 @@ echo "=== Set up localization ==="
 arch-chroot /mnt locale-gen
 
 echo "LANG=en_ZA.UTF-8" > /mnt/etc/locale.conf
-
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
 
 echo "=== Key mappings for Apple keyboard ==="
 {
@@ -136,9 +127,6 @@ mkdir -p /mnt/usr/local/share/kbd/keymaps
   echo "KEYMAP_TOGGLE=/usr/local/share/kbd/keymaps/custom.keymap"
 } >> /mnt/etc/vconsole.conf
 
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
-
 echo "=== Network configuration ==="
 echo "${COMPUTER_NAME}" > /mnt/etc/hostname
 
@@ -149,9 +137,6 @@ echo "${COMPUTER_NAME}" > /mnt/etc/hostname
 } > /mnt/etc/hosts
 
 arch-chroot /mnt systemctl enable NetworkManager
-
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
 
 echo "=== Setup EFI boot manager ==="
 arch-chroot /mnt bootctl install
@@ -171,17 +156,11 @@ arch-chroot /mnt bootctl install
   echo "options cryptdevice=PARTUUID=${ROOT_PARTITION_UUID}:root root=/dev/mapper/root rw"
 } > /mnt/boot/loader/entries/arch.conf
 
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
-
 echo "=== Setup sudo rights for members of group wheel ==="
 echo "%wheel ALL=(ALL:ALL) ALL" > /mnt/etc/sudoers.d/01_wheel
 
 echo "=== Temporarily disable password requirement for members of group wheel ==="
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /mnt/etc/sudoers.d/99_nopwd
-
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
 
 echo "=== Installing more packages ==="
 arch-chroot /mnt pacman -Syu
@@ -204,9 +183,6 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        libsecret \
                                        libgnome-keyring
 
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
-
 echo "=== Enabling ACPID ==="
 arch-chroot /mnt enable acpid
 
@@ -226,9 +202,6 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        volumeicon \
 				                               arandr
 
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
-
 echo "=== Install audio packages ==="
 
 arch-chroot /mnt pacman --noconfirm -S sof-firmware \
@@ -240,9 +213,6 @@ arch-chroot /mnt pacman --noconfirm -S sof-firmware \
                                        pulsemixer \
                                        alsa-utils \
                                        pavucontrol
-
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
 
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
@@ -258,9 +228,6 @@ arch-chroot /mnt bash <<EOF
     ssh-keygen -t ed25519 -f .ssh/id_ed25519 -N '' -C ${USER_EMAIL}
   "
 EOF
-
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
 
 echo "=== Installing PARU ==="
 arch-chroot /mnt bash <<EOF
@@ -291,9 +258,6 @@ arch-chroot /mnt bash <<EOF
   "
 EOF
 
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
-
 echo "=== Set up automatic display configuration ==="
 
 cat <<EOF >> /mnt/usr/local/sbin/autoconfigure-screens
@@ -314,9 +278,6 @@ cat <<EOF >> /mnt/etc/acpi/events/lid
 event=button/lid.*
 action=/usr/local/sbin/autoconfigure-screens
 EOF
-
-echo "[[ PRESS <ENTER> TO CONTINUE ]]"
-read -r CONTINUE
 
 
 echo "=== Re-enable password requirement for SUDO operations for members of group wheel ==="
