@@ -75,7 +75,7 @@ echo "=== Find the 20 most recently updated mirror sites and sort them by downlo
 reflector --country ZA,GB,US --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
 echo "=== Ensuring archlinux-keyring up to date ==="
-pacman -Sy archlinux-keyring
+pacman --noconfirm -Sy archlinux-keyring
 
 echo "=== Install base linux packages to mounted root ==="
 pacstrap /mnt base \
@@ -224,8 +224,7 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        libnotify \
                                        dunst \
                                        volumeicon \
-				                               arandr \
-				                               xlayoutdisplay
+				                               arandr
 
 echo "[[ PRESS <ENTER> TO CONTINUE ]]"
 read -r CONTINUE
@@ -287,7 +286,8 @@ arch-chroot /mnt bash <<EOF
                         neovim \
                         neovim-symlinks \
                         xclip \
-                        nerd-fonts-jetbrains-mono
+                        nerd-fonts-jetbrains-mono \
+                        xlayoutdisplay
   "
 EOF
 
