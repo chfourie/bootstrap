@@ -178,13 +178,13 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        starship \
                                        exa \
                                        htop \
-				                               acpid \
+                                       acpid \
                                        gnome-keyring \
                                        libsecret \
                                        libgnome-keyring
 
 echo "=== Enabling ACPID ==="
-arch-chroot /mnt enable acpid
+arch-chroot /mnt systemctl enable acpid
 
 echo "=== Installing windowing manager and related packages ==="
 
