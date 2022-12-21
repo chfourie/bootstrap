@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-pacman -Sy archlinux-keyring
-
 lsblk
 read -rp "Name of target drive: /dev/" TARGET_DRIVE_NAME
 TARGET_DRIVE="/dev/${TARGET_DRIVE_NAME}"
@@ -76,6 +74,9 @@ read -r CONTINUE
 echo "=== Find the 20 most recently updated mirror sites and sort them by download rates ==="
 reflector --country ZA,GB,US --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 
+echo "=== Ensuring archlinux-keyring up to date ==="
+pacman -Sy archlinux-keyring
+
 echo "=== Install base linux packages to mounted root ==="
 pacstrap /mnt base \
               linux \
@@ -97,7 +98,7 @@ echo "=== Set timezone ==="
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/Africa/Johannesburg /etc/localtime
 
 echo "=== Sync hardware clock to system clock ==="
-arch-chroot /mnt hwclock --systohc
+arch-chroot /mnt hwclock --systohc --update-drift
 
 echo "=== Set up localization ==="
 {
