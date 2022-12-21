@@ -200,7 +200,9 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        libnotify \
                                        dunst \
                                        volumeicon \
-				                               arandr
+				                               arandr \
+				                               xorg-xinput \
+				                               imwheel
 
 echo "=== Install audio packages ==="
 
