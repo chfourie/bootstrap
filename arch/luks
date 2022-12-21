@@ -110,6 +110,9 @@ arch-chroot /mnt locale-gen
 
 echo "LANG=en_ZA.UTF-8" > /mnt/etc/locale.conf
 
+echo "[[ PRESS <ENTER> TO CONTINUE ]]"
+read -r CONTINUE
+
 echo "=== Key mappings for Apple keyboard ==="
 {
   echo "options hid_apple fnmode=2"
