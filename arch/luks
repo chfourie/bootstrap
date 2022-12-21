@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pacman-key --init
+pacman -Sy archlinux-keyring
 
 lsblk
 read -rp "Name of target drive: /dev/" TARGET_DRIVE_NAME
