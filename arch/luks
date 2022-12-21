@@ -56,7 +56,7 @@ echo "=== Set up partition table with new partitions ==="
 wipefs -a "${TARGET_DRIVE}"
 sgdisk -n 0:0:+500MiB -t 0:ef00 -c 0:boot -u 0:"${EFI_PARTITION_UUID}" "${TARGET_DRIVE}"
 sgdisk -n 0:0:0 -t 0:8300 -c 0:root -u 0:"${ROOT_PARTITION_UUID}" "${TARGET_DRIVE}"
-e2fsck -fy "${ROOT_PARTITION}"
+# e2fsck -fy "${ROOT_PARTITION}"
 
 echo "=== Set up encryption on root partition ==="
 echo "${ENCRYPTION_PASSWORD}" | cryptsetup -q luksFormat "${ROOT_PARTITION}"
