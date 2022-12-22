@@ -112,7 +112,15 @@ echo "=== Key mappings for Apple keyboard ==="
 } >> /mnt/etc/modprobe.d/hid_apple.conf
 
 echo "=== Swap caps and escape keys (X) ==="
-echo "setxkbmap -option caps:swapescape" >> /mnt/etc/xprofile
+mkdir -p /mnt/etc/X11/xorg.conf.d
+
+cat <<EOF >> /mnt/etc/X11/xorg.conf.d/10-keyboard.conf
+Section "InputClass"
+    Identifier          "system-keyboard"
+    MatchIsKeyboard     "on"
+    Option "XkbOptions" "caps:swapescape"
+EndSection
+EOF
 
 echo "=== Swap caps and escape keys (tty) ==="
 mkdir -p /mnt/usr/local/share/kbd/keymaps
