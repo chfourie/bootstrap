@@ -224,6 +224,12 @@ arch-chroot /mnt pacman --noconfirm -S sof-firmware \
                                        alsa-utils \
                                        pavucontrol
 
+echo "=== Install music player ==="
+
+arch-chroot /mnt pacman --noconfirm -S mpd \
+                                       ncmpcpp
+
+
 echo "=== Install bluetooth packages =="
 
 arch-chroot /mnt pacman --noconfirm -S bluez \
