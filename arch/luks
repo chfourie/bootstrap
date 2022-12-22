@@ -279,10 +279,6 @@ export DISPLAY=:0
 export XAUTHORITY=/home/${USERNAME}/.Xauthority
 
 xlayoutdisplay -w 3 >> /tmp/xlayoutdisplay.log 2>&1
-
-# Make use of opportunity to make sure keyboard mapping is still ok
-# TODO: this should evenually go into it's own file as it is unrelated to display
-setxkbmap -option caps:swapescape
 EOF
 
 chmod +x /mnt/usr/local/sbin/autoconfigure-screens
