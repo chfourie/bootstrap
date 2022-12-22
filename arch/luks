@@ -216,6 +216,14 @@ arch-chroot /mnt pacman --noconfirm -S sof-firmware \
                                        alsa-utils \
                                        pavucontrol
 
+echo "=== Install bluetooth packages =="
+
+arch-chroot /mnt pacman --noconfirm -S bluez \
+                                       bluez-utils \
+                                       blueman
+
+arch-chroot /mnt systemctl enable bluetooth.service
+
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
 
@@ -245,7 +253,7 @@ echo "=== Enabling LightDM service ==="
 
 arch-chroot /mnt systemctl enable lightdm.service
 
-echo "=== Installing Google Chrome, NeoVim, nerd fonts ==="
+echo "=== Installing packages from AUR ==="
 
 arch-chroot /mnt bash <<EOF
   $(declare -p USERNAME)
@@ -256,7 +264,8 @@ arch-chroot /mnt bash <<EOF
                         neovim-symlinks \
                         xclip \
                         nerd-fonts-jetbrains-mono \
-                        xlayoutdisplay
+                        xlayoutdisplay \
+                        bluetuith
   "
 EOF
 
