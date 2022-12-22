@@ -189,7 +189,8 @@ arch-chroot /mnt pacman --noconfirm -S mtools \
                                        acpid \
                                        gnome-keyring \
                                        libsecret \
-                                       libgnome-keyring
+                                       libgnome-keyring \
+                                       usbutils
 
 echo "=== Enabling ACPID ==="
 arch-chroot /mnt systemctl enable acpid
@@ -227,6 +228,7 @@ arch-chroot /mnt pacman --noconfirm -S sof-firmware \
 echo "=== Install music player ==="
 
 arch-chroot /mnt pacman --noconfirm -S mpd \
+                                       mpc \
                                        ncmpcpp
 
 
@@ -237,6 +239,10 @@ arch-chroot /mnt pacman --noconfirm -S bluez \
                                        blueman
 
 arch-chroot /mnt systemctl enable bluetooth.service
+
+echo "=== Mounting of USB storage devices ==="
+
+arch-chroot /mnt pacman --noconfirm -S udisks2
 
 echo "=== Setup user ${USERNAME} ==="
 arch-chroot /mnt useradd -m "${USERNAME}" -G wheel,audio,video,optical,storage
