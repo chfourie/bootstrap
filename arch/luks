@@ -211,7 +211,8 @@ arch-chroot /mnt pacman --noconfirm -S qtile \
                                        volumeicon \
 				                               arandr \
 				                               xorg-xinput \
-				                               imwheel
+				                               imwheel \
+				                               rofi
 
 echo "=== Install audio packages ==="
 
